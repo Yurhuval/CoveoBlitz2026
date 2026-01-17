@@ -1,4 +1,5 @@
 import game_message
+from CreateSpawnerSporeStrategy import CreateSpawnerSporeStrategy
 from GenerativeSporeStrategy import GenerativeSporeStrategy
 from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
@@ -7,8 +8,8 @@ from game_message import *
 class Bot:
     def __init__(self):
         print("Initializing your super mega duper bot")
-        spore_strategies = [str, SporeStrategy]
-        spawner_strategies = [str, SpawnerStrategy]
+        spore_strategies = dict[str, SporeStrategy]
+        spawner_strategies = dict[str, SpawnerStrategy]
 
     def get_next_move(self, game_message: TeamGameState) -> list[Action]:
         """
@@ -38,12 +39,15 @@ class Bot:
 
         # You can clearly do better than the random actions above. Have fun!!
         """
-        actions = run_strategies(game_message)
+        actions = run_strategies(self, game_message)
         return actions
 
 
 def create_spore_strategy(spore, game_message) -> SporeStrategy:
-    return GenerativeSporeStrategy()
+    if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
+        return CreateSpawnerSporeStrategy()
+    else:
+        return GenerativeSporeStrategy()
 
 
 def create_spawner_strategy(spawner, game_message) -> SpawnerStrategy:
