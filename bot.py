@@ -1,5 +1,10 @@
 import random
+
+from mergedeep import Strategy
+
 from game_message import *
+
+
 
 
 class Bot:
@@ -9,7 +14,7 @@ class Bot:
     def get_next_move(self, game_message: TeamGameState) -> list[Action]:
         """
         Here is where the magic happens, for now the moves are not very good. I bet you can do better ;)
-        """
+
         actions = []
 
         my_team: TeamInfo = game_message.world.teamInfos[game_message.yourTeamId]
@@ -33,4 +38,10 @@ class Bot:
             )
 
         # You can clearly do better than the random actions above. Have fun!!
+        """
+        actions = run_strategies(game_message)
         return actions
+
+def run_strategies(game_message: TeamGameState):
+    actions = []
+    pass
