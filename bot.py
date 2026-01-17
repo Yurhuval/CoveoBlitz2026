@@ -72,8 +72,6 @@ class Bot:
     def run_strategies(self, game_message: TeamGameState):
         actions = []
         team_info = game_message.world.teamInfos[game_message.yourTeamId]
-        if game_message.tick == 1:
-            self.on_first_add_spore_and_spawners(team_info,game_message)
 
         for spore in team_info.spores:
             if spore.id not in self.spore_strategies:
