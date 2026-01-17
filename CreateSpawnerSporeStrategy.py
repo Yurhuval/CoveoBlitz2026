@@ -17,7 +17,9 @@ class CreateSpawnerSporeStrategy(SporeStrategy):
 
     def get_action(self, spore: Spore, game_message: TeamGameState):
         team_info = game_message.world.teamInfos[game_message.yourTeamId]
-        if spore.position == self.target and team_info.nutrients > team_info.nextSpawnerCost:
+        if spore.position == self.target and spore.position in [spawner.position for spawner in game_message.world.spawners]:
+            self.swap_strategy(GenerativeSporeStrategy())
+        if spore.position == self.target and spore.biomass > team_info.nextSpawnerCost:
             self.swap_strategy(GenerativeSporeStrategy())
             return SporeCreateSpawnerAction(spore.id)
         else:
