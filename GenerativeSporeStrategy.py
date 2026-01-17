@@ -1,3 +1,4 @@
+from SpawnerBlitzStrategy import SpawnerBlitzStrategy
 from SporeStrategy import SporeStrategy
 from game_message import Spore, TeamGameState, SporeMoveToAction, Position
 from Utils import get_distance
@@ -27,4 +28,5 @@ class GenerativeSporeStrategy(SporeStrategy):
             action = SporeMoveToAction(spore.id, best_target)
             return action
 
-        return
+        self.swap_strategy(SpawnerBlitzStrategy())
+        return None
