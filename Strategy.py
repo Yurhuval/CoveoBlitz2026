@@ -9,3 +9,6 @@ class Strategy(ABC):
     def swap_strategy(self, new_strategy) -> Strategy:
         self.next_strategy = new_strategy
         self.to_swap = True
+
+    def get_to_swap(self):
+        return self.to_swap
