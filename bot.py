@@ -108,4 +108,4 @@ class Bot:
             self.spawner_strategies[key] = typing.cast(SpawnerStrategy,self.strategySwapper.swap_strategies_if_needed(value))
 
     def queue_spore_strategy(self,position : Position, sporeStrategy: SporeStrategy):
-        self.sporeStrategyQueue[position] = sporeStrategy
+        self.sporeStrategyQueue[(position.x,position.y)] = sporeStrategy
