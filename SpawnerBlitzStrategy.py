@@ -2,7 +2,6 @@ import math
 from typing import Callable
 
 import Utils
-from MoveStrategy import MoveStrategy
 from SporeStrategy import SporeStrategy
 from game_message import Spore, TeamGameState, Spawner, Position, SporeMoveToAction
 

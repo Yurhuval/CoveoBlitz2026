@@ -1,4 +1,5 @@
 import math
+from Utils import get_distance
 import typing
 
 import Utils
@@ -8,6 +9,8 @@ from CreateSpawnerSporeStrategy import CreateSpawnerSporeStrategy
 from GenerativeSporeStrategy import GenerativeSporeStrategy
 from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
+from SpawnerStrategy import SpawnerStrategy
+from TallSpawnerStrategy import TallSpawnerStrategy
 from Strategyswapper import Strategyswapper
 from SwappedStrat import SwappedStrat
 from TallSpawnerStrategy import TallSpawnerStrategy
@@ -64,7 +67,7 @@ class Bot:
     def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
         return TallSpawnerStrategy()
 
-    def on_first_add_spore_and_spawners(self, team_info: TeamInfo,game_message: TeamGameState) -> None:
+    def on_first_add_spore_and_spawners(self, team_info: TeamInfo, game_message: TeamGameState) -> None:
         for spore in team_info.spores:
             self.add_spore_strategy(spore.id, self.create_spore_strategy(spore, game_message))
         for spawner in team_info.spawners:
@@ -73,23 +76,49 @@ class Bot:
     def run_strategies(self, game_message: TeamGameState):
         actions = []
         team_info = game_message.world.teamInfos[game_message.yourTeamId]
+        remaining_nutrients = team_info.nutrients
 
-        for spore in team_info.spores:
+        current_targets = []
+        for strat in self.spore_strategies.values():
+            if hasattr(strat, 'target') and strat.target:
+                current_targets.append(strat.target)
+
+        sorted_spores = sorted(team_info.spores, key=lambda s: s.id)
+
+        for spore in sorted_spores:
             if spore.id not in self.spore_strategies:
                 sporeStrategy = self.create_spore_strategy(spore, game_message)
                 self.add_spore_strategy(spore.id, sporeStrategy)
             strat = self.spore_strategies[spore.id]
+            if hasattr(strat, 'set_current_targets'):
+                strat.set_current_targets(current_targets)
+
             action = strat.get_action(spore, game_message)
+            
+            if hasattr(strat, 'target') and strat.target:
+                current_targets.append(strat.target)
+
             if action is not None:
                 actions.append(action)
+
         for spawner in team_info.spawners:
             if spawner.id not in self.spawner_strategies:
                 spawnerStrategy = self.create_spawner_strategy(spawner, game_message)
                 self.add_spawner_strategy(spawner.id, spawnerStrategy)
             strat = self.spawner_strategies[spawner.id]
-            action = strat.get_action(spawner, game_message)
+            if hasattr(strat, 'get_action_with_budget'):
+                action = strat.get_action_with_budget(spawner, game_message, remaining_nutrients)
+            else:
+                action = strat.get_action(spawner, game_message)
+                
             if action is not None:
-                actions.append(action)
+                if isinstance(action, SpawnerProduceSporeAction):
+                    if action.biomass <= remaining_nutrients:
+                        remaining_nutrients -= action.biomass
+                        actions.append(action)
+                else:
+                    actions.append(action)
+
         return actions
 
     def add_spore_strategy(self, id: str, sporeStrategy: SporeStrategy):
