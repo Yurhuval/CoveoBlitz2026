@@ -12,6 +12,8 @@ class CreateSpawnerSporeStrategy(SporeStrategy):
         super().__init__()
         self.target = target
         self.queueFun = queueFunc
+        if target == None:
+            print("!")
 
     def get_action(self, spore: Spore, game_message: TeamGameState):
         team_info = game_message.world.teamInfos[game_message.yourTeamId]

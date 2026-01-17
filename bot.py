@@ -1,3 +1,4 @@
+import math
 import typing
 
 import Utils
@@ -45,7 +46,7 @@ class Bot:
         return GenerativeSporeStrategy()
 
     def _find_spawner_position(self, game_message):
-        if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
+        if len(game_message.world.teamInfos[game_message.yourTeamId].spawners) == 0:
             return game_message.world.teamInfos[game_message.yourTeamId].spores[0].position
         elif len(game_message.world.teamInfos[game_message.yourTeamId].spawners) < 3:
             current_spawner_position = game_message.world.teamInfos[game_message.yourTeamId].spawners[0].position
@@ -55,6 +56,10 @@ class Bot:
         for spore in game_message.world.teamInfos[game_message.yourTeamId].spores:
             if Utils.get_distance(current_spawner_pos, spore.position) >= 5:
                 return spore.position
+            else:
+                x = int(math.copysign(1, spore.position.x - (spore.position.x + 5))) * (spore.position.x - (spore.position.x + 5))
+                y = int(math.copysign(1, spore.position.y - (spore.position.y + 5))) * (spore.position.y - (spore.position.y + 5))
+                return Position(x, y)
 
     def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
         return TallSpawnerStrategy()
