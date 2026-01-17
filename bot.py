@@ -2,6 +2,8 @@ import random
 
 from mergedeep import Strategy
 
+from SpawnerStrategy import SpawnerStrategy
+from SporeStrategy import SporeStrategy
 from game_message import *
 
 
@@ -42,6 +44,22 @@ class Bot:
         actions = run_strategies(game_message)
         return actions
 
+
+def create_spore_strategy(spore, game_message) -> SporeStrategy:
+    pass
+
+
+def create_spawner_strategy(spawner, game_message) -> SpawnerStrategy:
+    pass
+
+
 def run_strategies(game_message: TeamGameState):
     actions = []
-    pass
+    team_info = game_message.world.teamInfos[game_message.yourTeamId]
+    for spore in team_info.spores:
+        sporeStrategy = create_spore_strategy(spore,game_message)
+        actions.append(sporeStrategy.get_action(spore,game_message))
+    for spawner in team_info.spawners:
+        spawnerStrategy = create_spawner_strategy(spawner,game_message)
+        actions.append(spawnerStrategy.get_action(spawner,game_message))
+    return actions
