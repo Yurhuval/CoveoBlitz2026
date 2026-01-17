@@ -1,14 +1,14 @@
 from SporeStrategy import SporeStrategy
-from game_message import TeamGameState, Position, SporeCreateSpawnerAction, Spore
+from game_message import TeamGameState, Position, SporeCreateSpawnerAction, Spore, SporeMoveToAction
 
 
 class CreateSpawnerSporeStrategy(SporeStrategy):
-    def __init__(self, position):
+    def __init__(self, target):
         super().__init__()
-        self.position = position
+        self.target = target
 
     def get_action(self, spore: Spore, game_message: TeamGameState):
-        if spore.position == self.position:
+        if spore.position == self.target:
             return SporeCreateSpawnerAction(spore.id)
         else:
-            return SporeCreateSpawnerAction(self.position)
+            return SporeMoveToAction(spore.id, self.target)

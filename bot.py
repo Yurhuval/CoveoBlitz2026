@@ -28,22 +28,32 @@ class Bot:
         return actions
 
     def create_spore_strategy(self, spore, game_message) -> SporeStrategy:
+
         key = (spore.position.x,spore.position.y)
         if key in self.sporeStrategyQueue:
             strategy = self.sporeStrategyQueue[key]
             self.sporeStrategyQueue.pop(key)
             return strategy
 
-        if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
-            position = self._find_spawner_position(game_message)
-            return CreateSpawnerSporeStrategy(position)
+        if len(game_message.world.teamInfos[game_message.yourTeamId].spawners) == 0:
+            target = self._find_spawner_position(game_message)
+            return CreateSpawnerSporeStrategy(target)
+        elif game_message.world.teamInfos[game_message.yourTeamId].nutrients > game_message.world.teamInfos[game_message.yourTeamId].nextSpawnerCost + 20:
+            target = self._find_spawner_position(game_message)[0]
+            return CreateSpawnerSporeStrategy(target)
         return GenerativeSporeStrategy()
 
     def _find_spawner_position(self, game_message):
         if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
             return game_message.world.teamInfos[game_message.yourTeamId].spores[0].position
         else:
-            pass
+            position = game_message.world.teamInfos[game_message.yourTeamId].spawners[0].position
+            x_left = position.x + 5
+            x_right = position.x - 5
+            y_top = position.y + 5
+            y_bottom = position.y - 5
+
+            return [Position(x_left, position.y), Position(position.x, y_top), Position(x_right, position.y), Position(position.x, y_bottom)]
 
 
     def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
