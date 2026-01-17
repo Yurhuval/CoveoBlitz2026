@@ -7,3 +7,4 @@ class SporeStrategy(ABC):
     @abstractmethod
     def get_action(self,spore : Spore, game_message : TeamGameState):
         pass
+    
