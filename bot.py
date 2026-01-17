@@ -37,10 +37,10 @@ class Bot:
 
         if len(game_message.world.teamInfos[game_message.yourTeamId].spawners) == 0:
             target = self._find_spawner_position(game_message)
-            return CreateSpawnerSporeStrategy(target)
+            return CreateSpawnerSporeStrategy(target,self.queue_spore_strategy)
         elif game_message.world.teamInfos[game_message.yourTeamId].nutrients > game_message.world.teamInfos[game_message.yourTeamId].nextSpawnerCost + 20:
             target = self._find_spawner_position(game_message)[0]
-            return CreateSpawnerSporeStrategy(target)
+            return CreateSpawnerSporeStrategy(target,self.queue_spore_strategy)
         return GenerativeSporeStrategy()
 
     def _find_spawner_position(self, game_message):

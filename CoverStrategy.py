@@ -12,8 +12,8 @@ class CoverStrategy(SporeStrategy):
         self.destination : Position = destination
         self.queueFunc : Callable = queueFunc
     def get_action(self, spore: Spore, game_message: TeamGameState):
-        direction = Position(0,-math.copysign(1,spore.position.y - self.destination.y))
+        direction = Position(0,-int(math.copysign(1,spore.position.y - self.destination.y)))
         remainingBio = max(1,spore.biomass - abs(spore.position.x - self.destination.x))
         splitAction = SporeSplitAction(spore.id,remainingBio,direction)
-        self.queueFunc((spore.position.x,spore.position.y), MoveStrategy(Position(spore.position.x, self.destination.x)))
+        self.queueFunc(spore.position, MoveStrategy(Position(spore.position.x, self.destination.x)))
         return splitAction
