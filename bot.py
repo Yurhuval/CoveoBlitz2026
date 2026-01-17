@@ -1,5 +1,6 @@
 import typing
 
+import Utils
 import game_message
 from CoverStrategy import CoverStrategy
 from CreateSpawnerSporeStrategy import CreateSpawnerSporeStrategy
@@ -38,27 +39,22 @@ class Bot:
         if len(game_message.world.teamInfos[game_message.yourTeamId].spawners) == 0:
             target = self._find_spawner_position(game_message)
             return CreateSpawnerSporeStrategy(target,self.queue_spore_strategy)
-        elif game_message.world.teamInfos[game_message.yourTeamId].nutrients > game_message.world.teamInfos[game_message.yourTeamId].nextSpawnerCost + 20:
-
-            targets = self._find_spawner_position(game_message)
-            target = self._choose_target(targets, game_message)
+        elif len(game_message.world.teamInfos[game_message.yourTeamId].spawners) < 3:
+            target = self._find_spawner_position(game_message)
             return CreateSpawnerSporeStrategy(target,self.queue_spore_strategy)
         return GenerativeSporeStrategy()
 
     def _find_spawner_position(self, game_message):
         if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
             return game_message.world.teamInfos[game_message.yourTeamId].spores[0].position
-        else:
-            position = game_message.world.teamInfos[game_message.yourTeamId].spawners[0].position
-            x_left = position.x + 5
-            x_right = position.x - 5
-            y_top = position.y + 5
-            y_bottom = position.y - 5
+        elif len(game_message.world.teamInfos[game_message.yourTeamId].spawners) < 3:
+            current_spawner_position = game_message.world.teamInfos[game_message.yourTeamId].spawners[0].position
+            return self._choose_target(current_spawner_position, game_message)
 
-            return [Position(x_left, position.y), Position(position.x, y_top), Position(x_right, position.y), Position(position.x, y_bottom)]
-
-    def _choose_target(self, targets, game_message):
-        pass
+    def _choose_target(self, current_spawner_pos, game_message):
+        for spore in game_message.world.teamInfos[game_message.yourTeamId].spores:
+            if Utils.get_distance(current_spawner_pos, spore.position) >= 5:
+                return spore.position
 
     def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
         return TallSpawnerStrategy()
