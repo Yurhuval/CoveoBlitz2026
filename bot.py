@@ -6,6 +6,7 @@ from GenerativeSporeStrategy import GenerativeSporeStrategy
 from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
 from Strategyswapper import Strategyswapper
+from SwappedStrat import SwappedStrat
 from TallSpawnerStrategy import TallSpawnerStrategy
 from game_message import *
 
