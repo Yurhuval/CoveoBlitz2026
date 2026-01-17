@@ -22,6 +22,7 @@ class Bot:
         self.sporeStrategyQueue: dict[tuple[int, int], SporeStrategy] = {}
         self.spawnerStrategyQueue: dict[Position, SpawnerStrategy] = dict()
         self.strategySwapper = Strategyswapper()
+        self.noSpawnersLastTick = 0
 
     def get_next_move(self, game_message: TeamGameState) -> list[Action]:
         self.clear_dead_strategies(game_message.world.teamInfos[game_message.yourTeamId])
@@ -30,7 +31,6 @@ class Bot:
         return actions
 
     def create_spore_strategy(self, spore, game_message) -> SporeStrategy:
-
         key = (spore.position.x,spore.position.y)
         if key in self.sporeStrategyQueue:
             strategy = self.sporeStrategyQueue[key]
@@ -73,6 +73,12 @@ class Bot:
     def run_strategies(self, game_message: TeamGameState):
         actions = []
         team_info = game_message.world.teamInfos[game_message.yourTeamId]
+        currentNbSpawners = len(game_message.world.teamInfos[game_message.yourTeamId].spawners)
+
+        if self.noSpawnersLastTick > currentNbSpawners:
+            spore = sorted(game_message.world.teamInfos[game_message.yourTeamId].spores, key=lambda sprout: sprout.biomass)[-2]
+            self.spore_strategies[spore.id] = CreateSpawnerSporeStrategy(spore.position, self.queue_spore_strategy)
+        self.noSpawnersLastTick = currentNbSpawners
 
         for spore in team_info.spores:
             if spore.id not in self.spore_strategies:
