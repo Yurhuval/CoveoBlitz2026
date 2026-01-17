@@ -1,6 +1,7 @@
 import typing
 
 import game_message
+from CoverStrategy import CoverStrategy
 from CreateSpawnerSporeStrategy import CreateSpawnerSporeStrategy
 from GenerativeSporeStrategy import GenerativeSporeStrategy
 from SpawnerStrategy import SpawnerStrategy
@@ -16,7 +17,7 @@ class Bot:
         print("Initializing your super mega duper bot")
         self.spore_strategies: dict[str, SporeStrategy] = dict()
         self.spawner_strategies: dict[str, SpawnerStrategy] = dict()
-        self.sporeStrategyQueue: dict[Position, SporeStrategy] = dict()
+        self.sporeStrategyQueue: dict[tuple[int, int], SporeStrategy] = {}
         self.spawnerStrategyQueue: dict[Position, SpawnerStrategy] = dict()
         self.strategySwapper = Strategyswapper()
 
@@ -27,6 +28,13 @@ class Bot:
         return actions
 
     def create_spore_strategy(self, spore, game_message) -> SporeStrategy:
+
+        key = (spore.position.x,spore.position.y)
+        if key in self.sporeStrategyQueue:
+            strategy = self.sporeStrategyQueue[key]
+            self.sporeStrategyQueue.pop(key)
+            return strategy
+
         if len(game_message.world.teamInfos[game_message.yourTeamId].spawners) == 0:
             target = self._find_spawner_position(game_message)
             return CreateSpawnerSporeStrategy(target)
@@ -98,3 +106,6 @@ class Bot:
             self.spore_strategies[key] = typing.cast(SporeStrategy, self.strategySwapper.swap_strategies_if_needed(value))
         for key, value in self.spawner_strategies.items():
             self.spawner_strategies[key] = typing.cast(SpawnerStrategy,self.strategySwapper.swap_strategies_if_needed(value))
+
+    def queue_spore_strategy(self,position : Position, sporeStrategy: SporeStrategy):
+        self.sporeStrategyQueue[position] = sporeStrategy

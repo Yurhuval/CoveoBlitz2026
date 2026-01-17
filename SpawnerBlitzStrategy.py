@@ -1,14 +1,17 @@
 import math
+from typing import Callable
 
 import Utils
+from MoveStrategy import MoveStrategy
 from SporeStrategy import SporeStrategy
 from game_message import Spore, TeamGameState, Spawner, Position, SporeMoveToAction
 
 
 class SpawnerBlitzStrategy(SporeStrategy):
-    def __init__(self, destination: Position = None):
+    def __init__(self, queueFunc : Callable, destination: Position = None, ):
         super().__init__()
         self.destination : Position = None
+        self.queueFunc = queueFunc
     def get_action(self, spore: Spore, game_message: TeamGameState):
         if self.destination is None or spore.position == self.destination:
             self.destination = self.find_destination(spore,game_message)
@@ -20,9 +23,10 @@ class SpawnerBlitzStrategy(SporeStrategy):
         destination = None
         for spawner in [spawner for spawner in game_message.world.spawners if spawner not in team_info.spawners]:
             dist = Utils.get_distance(spore.position, spawner.position)
-            if dist < max_dist and dist > 0  :
+            if max_dist > dist > 0:
                 max_dist = dist
                 destination = spawner.position
+
         return destination
 
 
