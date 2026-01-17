@@ -1,8 +1,6 @@
 from typing import Callable
 
-from CoverStrategy import CoverStrategy
 from GenerativeSporeStrategy import GenerativeSporeStrategy
-from SpawnerBlitzStrategy import SpawnerBlitzStrategy
 from SporeStrategy import SporeStrategy
 from game_message import TeamGameState, Position, SporeCreateSpawnerAction, Spore, SporeMoveToAction
 
