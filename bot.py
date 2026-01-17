@@ -80,13 +80,17 @@ class Bot:
                 sporeStrategy = self.create_spore_strategy(spore, game_message)
                 self.add_spore_strategy(spore.id, sporeStrategy)
             strat = self.spore_strategies[spore.id]
-            actions.append(strat.get_action(spore, game_message))
+            action = strat.get_action(spore, game_message)
+            if action is not None:
+                actions.append(action)
         for spawner in team_info.spawners:
             if spawner.id not in self.spawner_strategies:
                 spawnerStrategy = self.create_spawner_strategy(spawner, game_message)
                 self.add_spawner_strategy(spawner.id, spawnerStrategy)
             strat = self.spawner_strategies[spawner.id]
-            actions.append(strat.get_action(spawner, game_message))
+            action = strat.get_action(spawner, game_message)
+            if action is not None:
+                actions.append(action)
         return actions
 
     def add_spore_strategy(self, id: str, sporeStrategy: SporeStrategy):
