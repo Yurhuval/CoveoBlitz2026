@@ -1,8 +1,12 @@
+import typing
+
 import game_message
 from CreateSpawnerSporeStrategy import CreateSpawnerSporeStrategy
 from GenerativeSporeStrategy import GenerativeSporeStrategy
 from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
+from Strategyswapper import Strategyswapper
+from SwappedStrat import SwappedStrat
 from TallSpawnerStrategy import TallSpawnerStrategy
 from game_message import *
 
@@ -14,10 +18,12 @@ class Bot:
         self.spawner_strategies: dict[str, SpawnerStrategy] = dict()
         self.sporeStrategyQueue: dict[Position, SporeStrategy] = dict()
         self.spawnerStrategyQueue: dict[Position, SpawnerStrategy] = dict()
+        self.strategySwapper = Strategyswapper()
 
     def get_next_move(self, game_message: TeamGameState) -> list[Action]:
         self.clear_dead_strategies(game_message.world.teamInfos[game_message.yourTeamId])
         actions = self.run_strategies(game_message)
+        self.swap_strategies_if_needed()
         return actions
 
     def create_spore_strategy(self, spore, game_message) -> SporeStrategy:
@@ -76,3 +82,9 @@ class Bot:
         for spawner_id in list(self.spawner_strategies.keys()):
             if spawner_id not in alive_spawners:
                 self.spawner_strategies.pop(spawner_id)
+
+    def swap_strategies_if_needed(self):
+        for key, value in self.spore_strategies.items():
+            self.spore_strategies[key] = typing.cast(SporeStrategy, self.strategySwapper.swap_strategies_if_needed(value))
+        for key, value in self.spawner_strategies.items():
+            self.spawner_strategies[key] = typing.cast(SpawnerStrategy,self.strategySwapper.swap_strategies_if_needed(value))
