@@ -81,7 +81,10 @@ class Bot:
         current_targets = []
 
         if self.noSpawnersLastTick > currentNbSpawners:
-            spore = sorted(game_message.world.teamInfos[game_message.yourTeamId].spores, key=lambda sprout: sprout.biomass)[-2]
+            if currentNbSpawners == 0:
+                spore = sorted(game_message.world.teamInfos[game_message.yourTeamId].spores, key=lambda sprout: sprout.biomass)[-2]
+            else:
+                spore = game_message.world.teamInfos[game_message.yourTeamId].spores[0]
             self.spore_strategies[spore.id] = CreateSpawnerSporeStrategy(spore.position, self.queue_spore_strategy)
         self.noSpawnersLastTick = currentNbSpawners
 
