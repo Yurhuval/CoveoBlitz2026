@@ -39,7 +39,8 @@ class Bot:
             target = self._find_spawner_position(game_message)
             return CreateSpawnerSporeStrategy(target)
         elif game_message.world.teamInfos[game_message.yourTeamId].nutrients > game_message.world.teamInfos[game_message.yourTeamId].nextSpawnerCost + 20:
-            target = self._find_spawner_position(game_message)[0]
+            targets = self._find_spawner_position(game_message)
+            target = self._choose_target(targets, game_message)
             return CreateSpawnerSporeStrategy(target)
         return GenerativeSporeStrategy()
 
@@ -55,6 +56,8 @@ class Bot:
 
             return [Position(x_left, position.y), Position(position.x, y_top), Position(x_right, position.y), Position(position.x, y_bottom)]
 
+    def _choose_target(self, targets, game_message):
+        pass
 
     def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
         return TallSpawnerStrategy()
