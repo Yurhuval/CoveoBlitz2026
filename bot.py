@@ -4,6 +4,7 @@ from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
 from game_message import *
 
+
 class Bot:
     def __init__(self):
         print("Initializing your super mega duper bot")
@@ -38,31 +39,32 @@ class Bot:
 
         # You can clearly do better than the random actions above. Have fun!!
         """
-        actions = run_strategies(game_message)
+        actions = self.run_strategies(game_message)
         return actions
 
+    def create_spore_strategy(self, spore, game_message) -> SporeStrategy:
+        return GenerativeSporeStrategy()
 
-def create_spore_strategy(spore, game_message) -> SporeStrategy:
-    return GenerativeSporeStrategy()
+    def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
+        pass
 
+    def on_first_add_spore_and_spawners(self, team_info: TeamInfo):
+        if not self.spore_strategies.keys:
+            self.spore_strategies = dict.fromKeys(team_info.spawners, self.create_spore_strategy)
+        if not self.spawner_strategies.keys:
+            self.spawner_strategies = dict.fromkeys(team_info.spawners, self.create_spawner_strategy)
 
-def create_spawner_strategy(spawner, game_message) -> SpawnerStrategy:
-    pass
+    def run_strategies(self, game_message: TeamGameState):
+        actions = []
+        team_info = game_message.world.teamInfos[game_message.yourTeamId]
+        self.on_first_add_spore_and_spawners(team_info)
 
-
-def run_strategies(bot, game_message: TeamGameState):
-    actions = []
-    team_info = game_message.world.teamInfos[game_message.yourTeamId]
-    if not bot.spore_strategies.keys:
-        bot.spore_strategies = dict.fromKeys(team_info.spawners, create_spore_strategy)
-    if not bot.spawner_strategies.keys:
-        bot.spawner_strategies = dict.fromkeys(team_info.spawners, create_spawner_strategy)
-    for spore in team_info.spores:
-        if bot.spore_strategies[spore.id] is None:
-            sporeStrategy = create_spore_strategy(spore, game_message)
-            actions.append(sporeStrategy.get_action(spore,game_message))
-    for spawner in team_info.spawners:
-        if bot.spawner_strategies[spawner.id] is None:
-            spawnerStrategy = create_spawner_strategy(spawner,game_message)
-            actions.append(spawnerStrategy.get_action(spawner,game_message))
-    return actions
+        for spore in team_info.spores:
+            if self.spore_strategies[spore.id] is None:
+                sporeStrategy = self.create_spore_strategy(spore, game_message)
+                actions.append(sporeStrategy.get_action(spore, game_message))
+        for spawner in team_info.spawners:
+            if self.spawner_strategies[spawner.id] is None:
+                spawnerStrategy = self.create_spawner_strategy(spawner, game_message)
+                actions.append(spawnerStrategy.get_action(spawner, game_message))
+        return actions
