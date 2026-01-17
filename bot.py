@@ -1,7 +1,5 @@
 import random
 
-from mergedeep import Strategy
-
 from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
 from game_message import *
@@ -46,7 +44,7 @@ class Bot:
 
 
 def create_spore_strategy(spore, game_message) -> SporeStrategy:
-    pass
+    return new GenerativeSporeStrategy()
 
 
 def create_spawner_strategy(spawner, game_message) -> SpawnerStrategy:
