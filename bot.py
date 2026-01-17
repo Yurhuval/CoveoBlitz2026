@@ -1,11 +1,7 @@
-import random
-
+from GenerativeSporeStrategy import GenerativeSporeStrategy
 from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
 from game_message import *
-
-
-
 
 class Bot:
     def __init__(self):
@@ -44,7 +40,7 @@ class Bot:
 
 
 def create_spore_strategy(spore, game_message) -> SporeStrategy:
-    return new GenerativeSporeStrategy()
+    return GenerativeSporeStrategy()
 
 
 def create_spawner_strategy(spawner, game_message) -> SpawnerStrategy:
