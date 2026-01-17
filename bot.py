@@ -1,7 +1,9 @@
 import game_message
+from CreateSpawnerSporeStrategy import CreateSpawnerSporeStrategy
 from GenerativeSporeStrategy import GenerativeSporeStrategy
 from SpawnerStrategy import SpawnerStrategy
 from SporeStrategy import SporeStrategy
+from TallSpawnerStrategy import TallSpawnerStrategy
 from game_message import *
 
 
@@ -19,10 +21,12 @@ class Bot:
         return actions
 
     def create_spore_strategy(self, spore, game_message) -> SporeStrategy:
+        if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
+            return CreateSpawnerSporeStrategy()
         return GenerativeSporeStrategy()
 
     def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
-        pass
+        return TallSpawnerStrategy()
 
     def on_first_add_spore_and_spawners(self, team_info: TeamInfo,game_message: TeamGameState) -> None:
         for spore in team_info.spores:
@@ -37,13 +41,13 @@ class Bot:
             self.on_first_add_spore_and_spawners(team_info,game_message)
 
         for spore in team_info.spores:
-            if self.spore_strategies[spore.id] is None:
+            if spore.id not in self.spore_strategies:
                 sporeStrategy = self.create_spore_strategy(spore, game_message)
                 self.add_spore_strategy(spore.id, sporeStrategy)
             strat = self.spore_strategies[spore.id]
             actions.append(strat.get_action(spore, game_message))
         for spawner in team_info.spawners:
-            if self.spawner_strategies[spawner.id] is None:
+            if spawner.id not in self.spawner_strategies:
                 spawnerStrategy = self.create_spawner_strategy(spawner, game_message)
                 self.add_spawner_strategy(spawner.id, spawnerStrategy)
             strat = self.spawner_strategies[spawner.id]
