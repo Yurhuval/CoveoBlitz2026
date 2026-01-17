@@ -3,9 +3,12 @@ from game_message import TeamGameState, Position, SporeCreateSpawnerAction, Spor
 
 
 class CreateSpawnerSporeStrategy(SporeStrategy):
-    def get_action(self, spore: Spore, game_message: TeamGameState):
-        return SporeCreateSpawnerAction(spore.id)
+    def __init__(self, position):
+        super().__init__()
+        self.position = position
 
-    def find_spawner_position(self, game_message: TeamGameState) -> Spore:
-        if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
-            return game_message.world.spawners[game_message.yourTeamId].spores[0]
+    def get_action(self, spore: Spore, game_message: TeamGameState):
+        if spore.position == self.position:
+            return SporeCreateSpawnerAction(spore.id)
+        else:
+            return SporeCreateSpawnerAction(self.position)

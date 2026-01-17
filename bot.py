@@ -22,8 +22,15 @@ class Bot:
 
     def create_spore_strategy(self, spore, game_message) -> SporeStrategy:
         if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
-            return CreateSpawnerSporeStrategy()
+            position = self._find_spawner_position(game_message)
+            return CreateSpawnerSporeStrategy(position)
         return GenerativeSporeStrategy()
+
+    def _find_spawner_position(self, game_message) -> list[Position]:
+        if not game_message.world.teamInfos[game_message.yourTeamId].spawners:
+            return list(game_message.world.teamInfos[game_message.yourTeamId].spores[0].position)
+        else:
+
 
     def create_spawner_strategy(self, spawner, game_message) -> SpawnerStrategy:
         return TallSpawnerStrategy()
